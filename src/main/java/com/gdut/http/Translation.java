@@ -16,17 +16,19 @@ public class Translation {
 	
 	public static Responed translate(Request request){
 		Responed respone = new Responed();
-		HttpRequest.Builder builder = new HttpRequest.Builder();
-		builder.setUrl(translateURL);
+
+		HttpStringRequest translate = new HttpStringRequest();
+		translate.setMethod("get");
+		translate.setUrl(translateURL);
 		try {
-			builder.addParams("from", request.from);
-			builder.addParams("to", request.to);
-			builder.addParams("query", request.source);
+			translate.addParam("from", request.from);
+			translate.addParam("to", request.to);
+			translate.addParam("query", request.source);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		HttpRequest translate = builder.create();
-		translate.doGet();
+		translate.connect();
+
 		if(translate.getResopneCode()!=200){
 			respone.result = translate.getResponeContent();
             respone.isError = true;
