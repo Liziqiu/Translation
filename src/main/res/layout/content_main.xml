@@ -58,7 +58,27 @@
         android:layout_height="wrap_content"
         android:id="@+id/translate_sample_sentence"
         android:layout_below="@+id/translate_to"
+        android:layout_marginTop="10dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:id="@+id/translate_source_sound"
+        android:src="@drawable/sound3"
+        android:clickable="true"
+        android:layout_below="@+id/translate_source"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:id="@+id/translate_result_sound"
+        android:src="@drawable/sound3"
+        android:clickable="true"
+        android:layout_below="@+id/translate_result"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>

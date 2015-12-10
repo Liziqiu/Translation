@@ -16,17 +16,19 @@ public class HttpAudioRequest extends HttpRequest<String>{
 		this.audioFile = audioFile;
 	}
 	@Override
-	protected String parse(InputStream data) {
+	protected String parse(InputStream data) throws httpError {
 		String file = audioFile+"."+parseType(getResponeHeader());
-		writeTofile(data, file);
-		return file;
+		if(writeTofile(data, file)){
+			return file;
+		}
+		return null;
 	}
-	public String parseType(Map<String, String> headers) {
+	public String parseType(Map<String, String> headers) throws httpError {
         String contentType = headers.get("Content-type");
         if (contentType != null) {
             String[] params = contentType.split("/");
             if(params == null || params.length<2 || !params[0].equalsIgnoreCase("audio")){
-            	return "dat";
+            	throw new httpError("不支持此种语言的发音功能");
             }
             return params[1];
             
@@ -35,7 +37,10 @@ public class HttpAudioRequest extends HttpRequest<String>{
         return "dat";
     }
 	
-	private void writeTofile(InputStream data ,String path){
+	private boolean writeTofile(InputStream data ,String path) throws httpError{
+		if(data == null){
+			return false;
+		}
 		DataOutputStream out = null;
 		FileOutputStream file = null;
 		BufferedOutputStream buffter = null;
@@ -50,33 +55,34 @@ public class HttpAudioRequest extends HttpRequest<String>{
 				len = data.read(temp);
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new httpError("HttpAudioRequest writeTofile error:"+e.toString());
 		}finally{
 			if(out!=null){
 				try {
 					out.close();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
+					throw new httpError("HttpAudioRequest close stream error:"+e.toString());
 				}
 			}
 			if(file!=null){
 				try {
 					file.close();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
+					throw new httpError("HttpAudioRequest close stream error:"+e.toString());
 				}
 			}
 			if(buffter!=null){
 				try {
 					buffter.close();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
+					throw new httpError("HttpAudioRequest close stream error:"+e.toString());
 				}
 			}
 		}
+		return true;
 	}
 }

@@ -3,30 +3,22 @@ package com.gdut.http;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Translation {
-	/*参数 from和to的值有：
-	中文	zh	英语	en   日语	jp	韩语	kor   西班牙语	spa	 法语 fra   泰语	th	阿拉伯语	ara  俄罗斯语	ru	葡萄牙语	pt   粤语	yue	文言文wyw
-	白话文	zh	自动检测	auto   德语	de	意大利语	it   荷兰语	nl	希腊语	el*/
 	
 	public static final String translateURL = "http://fanyi.baidu.com/transapi";
 	
-	public static Responed translate(Request request){
+	public Responed translate(Request request) throws httpError{
 		Responed respone = new Responed();
 
 		HttpStringRequest translate = new HttpStringRequest();
 		translate.setMethod("get");
 		translate.setUrl(translateURL);
-		try {
-			translate.addParam("from", request.from);
-			translate.addParam("to", request.to);
-			translate.addParam("query", request.source);
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
+		translate.addParam("from", request.from);
+		translate.addParam("to", request.to);
+		translate.addParam("query", request.source);
 		translate.connect();
 
 		if(translate.getResopneCode()!=200){
