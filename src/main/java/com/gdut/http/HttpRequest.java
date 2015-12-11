@@ -106,6 +106,7 @@ public abstract class HttpRequest<T> {
 			}
 
 			conn.setInstanceFollowRedirects(true);
+			conn.setConnectTimeout(10*1000);
 			ResopneCode = conn.getResponseCode();
 			for(Entry<String,List<String>> head: conn.getHeaderFields().entrySet()){
 				if(head.getKey()!=null && head.getValue()!=null){

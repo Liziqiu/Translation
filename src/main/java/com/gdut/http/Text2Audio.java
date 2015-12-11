@@ -1,5 +1,9 @@
 package com.gdut.http;
 
+import android.content.Context;
+import android.media.AudioManager;
+import android.media.SoundPool;
+import android.os.AsyncTask;
 import android.support.v4.util.LruCache;
 
 import java.io.File;
@@ -94,5 +98,48 @@ public class Text2Audio {
             flag = true;
         }
         return flag;
+    }
+
+    public void AsyncGetAudio(String lan,String txt, final CallBack callBack){
+        AsyncTask<String,Integer,String> task = new AsyncTask<String,Integer,String>(){
+            private httpError error;
+            @Override
+            protected String doInBackground(String... params) {
+                String lan = params[0];
+                String txt = params[1];
+                try {
+                    String result = GetAudio(lan, txt);
+                    return result;
+                } catch (httpError e) {
+                    e.printStackTrace();
+                    error = e;
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+                if(error != null){
+                    callBack.Error(error);
+                }else{
+                    callBack.Completed(s);
+                }
+            }
+        };
+        task.execute(lan,txt);
+    }
+    public void playSound(String audioFile,Context context) {
+        SoundPool sp = new SoundPool(2, AudioManager.STREAM_MUSIC,0);
+        AudioManager am = (AudioManager)context.getSystemService(context.AUDIO_SERVICE);
+        float audioMaxVolumn = am.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        float audioCurrentVolumn = am.getStreamVolume(AudioManager.STREAM_MUSIC);
+        float volumnRatio = audioCurrentVolumn/audioMaxVolumn;
+
+        sp.play(sp.load(audioFile,1), volumnRatio, volumnRatio, 1, 0, 1);
+    }
+    public interface CallBack{
+        public void Completed(String audioPath);
+        public void Error(httpError error);
     }
 }

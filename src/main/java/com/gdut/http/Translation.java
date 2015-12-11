@@ -1,5 +1,7 @@
 package com.gdut.http;
 
+import android.os.AsyncTask;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -10,7 +12,7 @@ public class Translation {
 	
 	public static final String translateURL = "http://fanyi.baidu.com/transapi";
 	
-	public Responed translate(Request request) throws httpError{
+	public Responed GetTranslateResultByHttp(Request request) throws httpError{
 		Responed respone = new Responed();
 
 		HttpStringRequest translate = new HttpStringRequest();
@@ -103,4 +105,41 @@ public class Translation {
 		}
 		
 	}
+	public interface CallBack{
+		public void Completed(Translation.Responed responed);
+        public void Error(httpError error);
+	}
+	public void doTranslate(Translation.Request request, final Translation.CallBack callBack){
+        AsyncTask<Translation.Request,Integer,Translation.Responed> task = new AsyncTask<Translation.Request,Integer,Translation.Responed>(){
+            private httpError error = null;
+            @Override
+            protected Responed doInBackground(Request... params) {
+                if(params == null || params.length==0){
+                    error = new httpError("Translation request is null");
+                    return null;
+                }
+                Request request = params[0];
+                try {
+                    Responed responed = GetTranslateResultByHttp(request);
+                    return responed;
+                } catch (com.gdut.http.httpError httpError) {
+                    httpError.printStackTrace();
+                    error = httpError;
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Responed responed) {
+                super.onPostExecute(responed);
+                if(responed == null || error != null){
+                    callBack.Error(error);
+                }else{
+                    callBack.Completed(responed);
+                }
+            }
+        };
+
+        task.execute(request);
+    }
 }
